@@ -71,8 +71,6 @@ logs/
 # Shader disassembly dumps
 *.asm
 
-# Recon archive (Docs/recon-mafiade): 只留文本证据，二进制/日志/压缩包不入库
-Docs/recon-mafiade/analyzer/
-Docs/recon-mafiade/*.addon.safe
-Docs/recon-mafiade/*.zip
-!Docs/recon-mafiade/asm/*.asm
+# Recon archive: 侦察采集与反汇编产物（非源码），整体不入库。
+# 上游作者曾专门发 commit 删除仓库内的 disasm dump，这类文件不随 PR 走。
+Docs/recon-mafiade/
