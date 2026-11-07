@@ -60,6 +60,9 @@ Source/Games/**/vcpkg_installed/**
 deploy-*.ps1
 *.log
 
+# Diagnostics: state snapshots, run evidence, third-party reference sources
+logs/
+
 # Forced not ignored (e.g. !./Source/Core/Luma.vcxproj)
 
 # Visual Studio per-user files
@@ -67,3 +70,9 @@ deploy-*.ps1
 
 # Shader disassembly dumps
 *.asm
+
+# Recon archive (Docs/recon-mafiade): 只留文本证据，二进制/日志/压缩包不入库
+Docs/recon-mafiade/analyzer/
+Docs/recon-mafiade/*.addon.safe
+Docs/recon-mafiade/*.zip
+!Docs/recon-mafiade/asm/*.asm

@@ -1,6 +1,8 @@
 #pragma once
 
-#include <atlbase.h>
+// [LOCAL PATCH] was: #include <atlbase.h>  (ATL is an optional VS component, not installed
+// with VS 2022 BuildTools - see atl_compat.h for the WRL-based stand-in)
+#include "atl_compat.h"
 #include <d3dcompiler.h>
 #include <dxcapi.h>
 

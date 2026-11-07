@@ -59,18 +59,38 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
    {
       Globals::SetGlobals(PROJECT_NAME, "Luma DX11 Graphics Analyzer", "https://github.com/Filoppi/Luma-Framework/");
 
-      // Don't automatically dump game shaders
-      auto_dump = false;
+      // [LOCAL PATCH] Dump every shader automatically from launch, so shaders seen during
+      // loading (before the user can open the overlay) are captured too.
+      auto_dump = true;
       // Don't automatically load custom shaders
       auto_load = false;
 
-      // For now these are needed, because the scRGB HDR swapchain final draw shader acts as a debug draw texture visualizer.
-      // TODO: avoid this. Make it work in SDR, and also just don't upgrade the swapchain!
+      // [LOCAL PATCH] Skip the display composition pass entirely.
+      //
+      // Why: upstream leaves this false, and then core.hpp:5746 asserts
+      //   ASSERT_ONCE(target_desc.Format == DXGI_FORMAT_R16G16B16A16_FLOAT || ... R10G10B10A2_UNORM)
+      // on any SDR game whose swapchain stays R8G8B8A8_UNORM: the swapchain is never upgraded
+      // (swapchain_format_upgrade_type is None below) while the composition pass still runs,
+      // because needs_gamma_correction is true whenever DisplayMode == SDR.
+      //
+      // The assert is non-fatal (debug.h turns ASSERT into a MessageBoxA in NDEBUG Dev builds),
+      // but the real fix is to not run the pass at all: we only need the analyzer's tracing,
+      // dump and frame-capture features, none of which go through the composition.
+      //
+      // NOTE: do NOT "fix" this by setting swapchain_format_upgrade_type = AllowedEnabled.
+      // That makes Luma recreate the swapchain as R16G16B16A16_FLOAT, and Mafia: DE then
+      // deadlocks the moment the game calls SetFullscreenState(TRUE) right after
+      // ResizeBuffers (observed: ReShade.log stops dead at 14:51:48.230).
+      force_disable_display_composition = true;
+
       swapchain_format_upgrade_type = TextureFormatUpgradesType::None;
       swapchain_upgrade_type = SwapchainUpgradeType::scRGB;
 
-      // It might break some games, but at least one can alt tab quickly.
-      prevent_fullscreen_state = false;
+      // Upstream sets this to false ("It might break some games, but at least one can alt tab
+      // quickly"). The core default is true, and core.hpp:3550 carries the author's own note
+      // "TODO: test with Mafia 3 and BS2 if actually needed" - this is the same engine family,
+      // so keep the protective default rather than fighting exclusive fullscreen.
+      prevent_fullscreen_state = true;
 
       game = new GraphicsAnalyzer();
    }
