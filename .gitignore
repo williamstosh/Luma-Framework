@@ -74,3 +74,10 @@ logs/
 # Recon archive: 侦察采集与反汇编产物（非源码），整体不入库。
 # 上游作者曾专门发 commit 删除仓库内的 disasm dump，这类文件不随 PR 走。
 Docs/recon-mafiade/
+
+# Local development rules and handoff context: kept on disk, never tracked.
+# 沿用 RenoDX-DLSSNR-Nexus 的本地维护方式：内容不进 Git、不进 PR。
+/CODEBUDDY.md
+/AGENTS.md
+/PROJECT_INDEX.md
+/Docs/context/
